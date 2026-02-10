@@ -52,7 +52,7 @@ export const API = {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` }
   }),
-  getNoteBySlug: (slug) => fetch(`${API_URL}/api/notes/slug/${slug}`),
+  getNoteBySlug: (slug) => fetch(`${API_URL}/api/notes/${slug}`),
   getNoteById: (token, id) => fetch(`${API_URL}/api/notes/${id}`, {
     headers: { Authorization: `Bearer ${token}` }
   }),
