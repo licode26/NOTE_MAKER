@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { API, API_URL } from '../api';
 import ShareModal from '../components/ShareModal';
 
 function Dashboard() {
@@ -16,13 +17,7 @@ function Dashboard() {
 
   const fetchMyNotes = async () => {
     try {
-      let url = '/api/notes/my-notes';
-      if (searchQuery) {
-        url += `?search=${encodeURIComponent(searchQuery)}`;
-      }
-      const res = await fetch(url, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await API.getMyNotes(token);
       const data = await res.json();
       setNotes(data.notes || []);
     } catch (error) {
@@ -42,10 +37,7 @@ function Dashboard() {
     if (!window.confirm('Are you sure you want to delete this note?')) return;
 
     try {
-      await fetch(`/api/notes/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await API.deleteNote(token, id);
       setNotes(notes.filter(note => note._id !== id));
     } catch (error) {
       console.error('Error deleting note:', error);
@@ -54,7 +46,7 @@ function Dashboard() {
 
   const toggleGlobal = async (id) => {
     try {
-      const res = await fetch(`/api/notes/${id}/toggle-global`, {
+      const res = await fetch(`${API_URL}/api/notes/${id}/toggle-global`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       });

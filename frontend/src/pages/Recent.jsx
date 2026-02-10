@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { API } from '../api';
 
 function Recent() {
   const [notes, setNotes] = useState([]);
@@ -15,11 +16,7 @@ function Recent() {
 
   const fetchGlobalNotes = async () => {
     try {
-      let url = `/api/notes/global/recent?page=${page}`;
-      if (query) {
-        url = `/api/notes?search=${encodeURIComponent(query)}&page=${page}`;
-      }
-      const res = await fetch(url);
+      const res = await API.getPublicNotes();
       const data = await res.json();
       setNotes(data.notes || []);
       setPagination(data.pagination || {});

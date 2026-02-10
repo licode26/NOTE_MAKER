@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { API } from '../api';
 
 function CategorySelect({ onCreateNew }) {
   const [categories, setCategories] = useState([]);
@@ -17,9 +18,7 @@ function CategorySelect({ onCreateNew }) {
 
   const fetchUserCategories = async () => {
     try {
-      const res = await fetch('/api/categories/my-categories', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await API.getMyCategories(token);
       const data = await res.json();
       setCategories(data.categories || []);
     } catch (error) {
@@ -41,15 +40,7 @@ function CategorySelect({ onCreateNew }) {
     setIsCreating(true);
 
     try {
-      const res = await fetch('/api/categories', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ name: newCategory.trim() })
-      });
-
+      const res = await API.createCategory(token, { name: newCategory.trim() });
       const data = await res.json();
 
       if (res.ok) {

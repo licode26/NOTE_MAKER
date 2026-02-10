@@ -3,6 +3,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useAuth } from '../context/AuthContext';
+import { API } from '../api';
 
 function CreateNote() {
   const { id } = useParams();
@@ -28,9 +29,7 @@ function CreateNote() {
 
   const fetchNote = async () => {
     try {
-      const res = await fetch('/api/notes/my-notes', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await API.getMyNotes(token);
       const data = await res.json();
       const note = data.notes?.find(n => n._id === id);
       
@@ -70,17 +69,9 @@ function CreateNote() {
     };
 
     try {
-      const url = id ? `/api/notes/${id}` : '/api/notes';
-      const method = id ? 'PUT' : 'POST';
-
-      const res = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(noteData)
-      });
+      const res = id 
+        ? await API.updateNote(token, id, noteData)
+        : await API.createNote(token, noteData);
 
       const data = await res.json();
 

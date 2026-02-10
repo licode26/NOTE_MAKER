@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { API } from '../api';
 
 function ShareView() {
   const { shareLink } = useParams();
@@ -13,7 +14,7 @@ function ShareView() {
 
   const fetchSharedNote = async () => {
     try {
-      const res = await fetch(`/api/notes/share/${shareLink}`);
+      const res = await API.getSharedNote(shareLink);
       const data = await res.json();
 
       if (res.ok) {

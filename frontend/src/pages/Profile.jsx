@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { API } from '../api';
 
 function Profile() {
   const { username } = useParams();
@@ -34,7 +35,7 @@ function Profile() {
         await fetchUserNotes(user._id);
       } else {
         // View another user's profile - fetch from backend
-        const res = await fetch(`/api/auth/users/${username}`);
+        const res = await API.getUser(username);
         const data = await res.json();
         if (res.ok) {
           setProfile(data.user);
@@ -50,7 +51,7 @@ function Profile() {
 
   const fetchUserNotes = async (userId) => {
     try {
-      const res = await fetch(`/api/notes/user/${userId}`);
+      const res = await API.getMyNotes(token);
       const data = await res.json();
       if (res.ok) {
         setNotes(data.notes || []);
@@ -64,15 +65,7 @@ function Profile() {
     e.preventDefault();
     
     try {
-      const res = await fetch('/api/auth/profile', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(formData)
-      });
-
+      const res = await API.updateProfile(token, formData);
       const data = await res.json();
 
       if (res.ok) {

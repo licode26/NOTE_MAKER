@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { API, API_URL } from '../api';
 
 function ShareModal({ noteId, onClose }) {
   const [shareUrl, setShareUrl] = useState('');
@@ -13,12 +14,7 @@ function ShareModal({ noteId, onClose }) {
   const generateShareLink = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`/api/notes/${noteId}/share`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const res = await API.generateShareLink(token, noteId);
       const data = await res.json();
       
       if (data.shareUrl) {
@@ -34,7 +30,7 @@ function ShareModal({ noteId, onClose }) {
 
   const fetchQrCode = async (shareLink) => {
     try {
-      const res = await fetch(`/api/notes/qr/${shareLink}`);
+      const res = await fetch(`${API_URL}/api/notes/qr/${shareLink}`);
       const data = await res.json();
       setQrCode(data.qrCode);
     } catch (error) {

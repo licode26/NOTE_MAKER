@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { API, API_URL } from '../api';
 
 function NoteView() {
   const { slug } = useParams();
@@ -14,7 +15,7 @@ function NoteView() {
 
   const fetchNote = async () => {
     try {
-      const res = await fetch(`/api/notes/${slug}`);
+      const res = await API.getNoteBySlug(slug);
       const data = await res.json();
       
       if (res.ok) {
@@ -34,7 +35,7 @@ function NoteView() {
     }
 
     try {
-      const res = await fetch(`/api/notes/${note._id}/like`, {
+      const res = await fetch(`${API_URL}/api/notes/${note._id}/like`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       });

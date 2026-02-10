@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { API } from '../api';
 
 function Home() {
   const [notes, setNotes] = useState([]);
@@ -11,7 +12,7 @@ function Home() {
 
   const fetchNotes = async () => {
     try {
-      const res = await fetch('/api/notes');
+      const res = await API.getPublicNotes();
       const data = await res.json();
       setNotes(data.notes || []);
     } catch (error) {
