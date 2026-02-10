@@ -1,6 +1,7 @@
 // API base URL - uses environment variable in production, proxy in development
 const API_URL = import.meta.env.VITE_API_URL || '';
 
+export { API_URL };
 export const API = {
   // Auth
   login: (data) => fetch(`${API_URL}/api/auth/login`, {
