@@ -64,33 +64,41 @@ router.get('/', async (req, res) => {
       }
     }
 
-    // Add search functionality - searches title, content, tags, category name, and author name
+    // Add search functionality - prioritize exact matches
     if (search) {
       const Category = require('../models/Category');
-      const User = require('../models/User');
+      const User = require('../models/Category');
       
-      // Find matching categories
+      // Find matching categories (exact match)
       const matchingCategories = await Category.find({
-        name: { $regex: search, $options: 'i' }
+        name: { $regex: `^${search}$`, $options: 'i' }
       }).select('_id');
       
-      // Find matching users
+      // Find matching users (exact username match)
       const matchingUsers = await User.find({
         $or: [
-          { username: { $regex: search, $options: 'i' } },
-          { displayName: { $regex: search, $options: 'i' } }
+          { username: { $regex: `^${search}$`, $options: 'i' } },
+          { displayName: { $regex: `^${search}$`, $options: 'i' } }
         ]
       }).select('_id');
       
       const categoryIds = matchingCategories.map(c => c._id);
       const userIds = matchingUsers.map(u => u._id);
       
+      // Use word boundary regex for content to be more strict
+      const searchRegex = new RegExp(`\\b${search}\\b`, 'i');
+      
       query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { content: { $regex: search, $options: 'i' } },
-        { tags: { $regex: search, $options: 'i' } },
+        // Title matches with word boundary (highest priority)
+        { title: { $regex: searchRegex } },
+        // Exact tag matches
+        { tags: { $in: [new RegExp(`^${search}$`, 'i')] } },
+        // Category match (exact)
         { category: { $in: categoryIds } },
-        { author: { $in: userIds } }
+        // Author match (exact)
+        { author: { $in: userIds } },
+        // Content with word boundary (only matches whole words)
+        { content: { $regex: searchRegex } }
       ];
     }
 
@@ -129,16 +137,19 @@ router.get('/my-notes', auth, async (req, res) => {
       
       // Find matching categories
       const matchingCategories = await Category.find({
-        name: { $regex: search, $options: 'i' },
+        name: { $regex: `\\b${search}\\b`, $options: 'i' },
         createdBy: req.userId
       }).select('_id');
       
       const categoryIds = matchingCategories.map(c => c._id);
       
+      // Word boundary regex for stricter search
+      const searchRegex = new RegExp(`\\b${search}\\b`, 'i');
+      
       query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { content: { $regex: search, $options: 'i' } },
-        { tags: { $regex: search, $options: 'i' } },
+        { title: { $regex: searchRegex } },
+        { content: { $regex: searchRegex } },
+        { tags: { $in: [new RegExp(`^${search}$`, 'i')] } },
         { category: { $in: categoryIds } }
       ];
     }
