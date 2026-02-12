@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { API } from '../api';
+import { useAuth } from '../context/AuthContext';
 
 function ShareView() {
   const { shareLink } = useParams();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [note, setNote] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -43,6 +46,59 @@ function ShareView() {
     );
   }
 
+  // Show login/register prompts for unauthenticated users
+  if (!user) {
+    return (
+      <div className="share-view-page">
+        <div className="share-view-container">
+          <div className="share-header">
+            <Link to={`/user/${note.author?.username}`} className="author-info">
+              {note.author?.avatar && (
+                <img src={note.author.avatar} alt={note.author.username} className="author-avatar" />
+              )}
+              <span className="author-name">
+                {note.author?.displayName || note.author?.username}
+              </span>
+            </Link>
+            <span className="share-badge">Shared Note</span>
+          </div>
+
+          <h1 className="share-title">{note.title}</h1>
+          
+          <div className="share-content">
+            {note.content}
+          </div>
+
+          {note.tags && note.tags.length > 0 && (
+            <div className="share-tags">
+              {note.tags.map(tag => (
+                <span key={tag} className="tag">#{tag}</span>
+              ))}
+            </div>
+          )}
+
+          <div className="share-footer">
+            <span className="share-views">{note.views} views</span>
+            <span className="share-date">
+              Shared on {new Date(note.createdAt).toLocaleDateString()}
+            </span>
+          </div>
+
+          <div className="auth-required-banner">
+            <div className="auth-icon">🔒</div>
+            <h3>Join to save and share your notes</h3>
+            <p>Create a free account to access all features</p>
+            <div className="auth-buttons">
+              <Link to="/login" className="btn-secondary">Log In</Link>
+              <Link to="/register" className="btn-primary">Sign Up Free</Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // User is authenticated - show full note
   return (
     <div className="share-view-page">
       <div className="share-view-container">
@@ -81,7 +137,7 @@ function ShareView() {
 
         <div className="share-actions">
           <Link to="/" className="btn-secondary">Explore More Notes</Link>
-          <Link to="/register" className="btn-primary">Join and Share Your Notes</Link>
+          <Link to="/dashboard" className="btn-primary">Go to Dashboard</Link>
         </div>
       </div>
     </div>

@@ -1953,3 +1953,49 @@ a {
   border-color: var(--primary);
   background: #eff6ff;
 }
+
+/* Auth Required Banner in Share View */
+.auth-required-banner {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1px solid #bae6fd;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+body.dark-mode .auth-required-banner {
+  background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+  border-color: #3b82f6;
+}
+
+.auth-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.auth-required-banner h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.auth-required-banner p {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.auth-buttons .btn-secondary {
+  background: white;
+  border: 1px solid var(--border);
+}
+
+body.dark-mode .auth-buttons .btn-secondary {
+  background: var(--bg-secondary);
+}

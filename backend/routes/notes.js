@@ -328,6 +328,11 @@ router.post('/:id/toggle-global', auth, async (req, res) => {
   }
 });
 
+// Helper function to get frontend URL
+const getFrontendUrl = () => {
+  return process.env.FRONTEND_URL || 'http://localhost:5173';
+};
+
 // Generate share link
 router.post('/:id/share', auth, async (req, res) => {
   try {
@@ -343,12 +348,13 @@ router.post('/:id/share', auth, async (req, res) => {
       await note.save();
     }
 
-    const shareUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/share/${note.shareLink}`;
+    const frontendUrl = getFrontendUrl();
+    const shareUrl = `${frontendUrl}/share/${note.shareLink}`;
     
     res.json({ 
       shareUrl, 
       shareLink: note.shareLink,
-      shareQrCode: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/api/notes/qr/${note.shareLink}`
+      shareQrCode: `${frontendUrl}/api/notes/qr/${note.shareLink}`
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -379,7 +385,8 @@ router.get('/share/:shareLink', async (req, res) => {
 router.get('/qr/:shareLink', async (req, res) => {
   try {
     const QRCode = require('qrcode');
-    const shareUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/share/${req.params.shareLink}`;
+    const frontendUrl = getFrontendUrl();
+    const shareUrl = `${frontendUrl}/share/${req.params.shareLink}`;
     
     const qrCodeDataUrl = await QRCode.toDataURL(shareUrl, {
       width: 256,
