@@ -361,6 +361,32 @@ router.post('/:id/share', auth, async (req, res) => {
   }
 });
 
+// Regenerate share link (force regenerate existing link)
+router.post('/:id/regenerate-share', auth, async (req, res) => {
+  try {
+    const note = await Note.findOne({ _id: req.params.id, author: req.userId });
+    
+    if (!note) {
+      return res.status(404).json({ error: 'Note not found or unauthorized' });
+    }
+
+    // Always generate a new share link
+    note.shareLink = crypto.randomBytes(8).toString('hex');
+    await note.save();
+
+    const frontendUrl = getFrontendUrl();
+    const shareUrl = `${frontendUrl}/share/${note.shareLink}`;
+    
+    res.json({ 
+      shareUrl, 
+      shareLink: note.shareLink,
+      shareQrCode: `${frontendUrl}/api/notes/qr/${note.shareLink}`
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Get note by share link (public)
 router.get('/share/:shareLink', async (req, res) => {
   try {

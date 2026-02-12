@@ -5,16 +5,20 @@ function ShareModal({ noteId, onClose }) {
   const [shareUrl, setShareUrl] = useState('');
   const [qrCode, setQrCode] = useState('');
   const [loading, setLoading] = useState(true);
+  const [regenerating, setRegenerating] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     generateShareLink();
   }, [noteId]);
 
-  const generateShareLink = async () => {
+  const generateShareLink = async (regenerate = false) => {
     try {
+      setLoading(true);
       const token = localStorage.getItem('token');
-      const res = await API.generateShareLink(token, noteId);
+      const res = regenerate 
+        ? await API.regenerateShareLink(token, noteId)
+        : await API.generateShareLink(token, noteId);
       const data = await res.json();
       
       if (data.shareUrl) {
@@ -25,7 +29,13 @@ function ShareModal({ noteId, onClose }) {
       console.error('Error generating share link:', error);
     } finally {
       setLoading(false);
+      setRegenerating(false);
     }
+  };
+
+  const regenerateShareLink = () => {
+    setRegenerating(true);
+    generateShareLink(true);
   };
 
   const fetchQrCode = async (shareLink) => {
@@ -82,6 +92,13 @@ function ShareModal({ noteId, onClose }) {
               <a href={shareUrl} target="_blank" rel="noopener noreferrer" className="btn-open">
                 Open Share Page
               </a>
+              <button 
+                onClick={regenerateShareLink} 
+                className="btn-secondary"
+                disabled={regenerating}
+              >
+                {regenerating ? 'Regenerating...' : 'Regenerate Link'}
+              </button>
             </div>
           </>
         )}

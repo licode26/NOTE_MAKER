@@ -93,5 +93,9 @@ export const API = {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` }
   }),
+  regenerateShareLink: (token, noteId) => fetch(`${API_URL}/api/notes/${noteId}/regenerate-share`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` }
+  }),
   getSharedNote: (shareLink) => fetch(`${API_URL}/api/notes/shared/${shareLink}`)
 };
