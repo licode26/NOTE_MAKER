@@ -12,6 +12,7 @@ backend/node_modules/
 dist/
 build/
 .next/
+!backend/frontend/dist/
 
 # IDE
 .vscode/
