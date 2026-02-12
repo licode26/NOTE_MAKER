@@ -9,10 +9,11 @@ backend/node_modules/
 .env.*.local
 
 # Build outputs
-dist/
+frontend/dist/
 build/
 .next/
-!backend/frontend/dist/
+!frontend/dist/index.html
+!frontend/dist/assets/
 
 # IDE
 .vscode/
